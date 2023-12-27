@@ -8,8 +8,6 @@ from dotenv import load_dotenv,find_dotenv
 import time
 from typing import Any
 
-from database import Database
-
 # Single Message
 class MessageItem:
     def __init__(self ,role:str ,content:str | Any):
@@ -21,9 +19,6 @@ class OpenAIBot:
         # loading openai secret keys from os
         load_dotenv(find_dotenv()) 
 
-        # init database
-        self.db:Database = Database()
- 
         # Initializing Openai Client
         self.client:OpenAI = OpenAI()
 
@@ -31,9 +26,7 @@ class OpenAIBot:
         self.name:str = name
         self.instructions:str = instructions
         self.model:str = model 
-        
         self.file = fileFromUI 
-        # print("## File From UI" , fileFromUI , "self.file" , self.file)
 
         self.file = self.client.files.create(
             file = open(f"temp/{self.file}" , "rb"),
@@ -66,24 +59,15 @@ class OpenAIBot:
         return self.model
     
     def get_File(self):
-        # self.file = name
-        # print("self.file",self.file)
-        # print("#File ",name)
-        # print("self.file= FileFromUI" , self.file = fileFromUI)
         print("fileFROMUI",self.file)
         return self.file
 
-    # def append_messages(self , message):
-    #     self.messages.append(message)
-
     def send_message(self , message:str):
-        # self.append_messages(message=message)
         latest_message: ThreadMessage = self.client.beta.threads.messages.create(
             thread_id= self.thread.id,
             role= "user", 
             content= message
         )
-        # print("#Latest Message" , latest_message)
 
         self.latest_run:Run = self.client.beta.threads.runs.create(
             thread_id = self.thread.id,
